@@ -1,7 +1,7 @@
 trigger: none
 
 pool:
-  name: cong
+  name: testcon
 
 stages:
 - stage: TerraformStage
