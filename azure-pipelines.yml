@@ -1,17 +1,19 @@
 trigger: none
 
 pool:
-  name: testcon
+  name: cong
 
 stages:
 - stage: TerraformStage
   displayName: "Terraform Full Workflow"
+
   jobs:
   - job: TerraformJob
     displayName: "Init Validate Plan Apply"
+
     steps:
 
-    # 🔹 Terraform Init
+    # 🔹 INIT
     - task: TerraformTask@5
       displayName: "Terraform Init"
       inputs:
@@ -23,26 +25,27 @@ stages:
         backendAzureRmContainerName: 'connigent'
         backendAzureRmKey: 'Contest'
 
-    # 🔹 Terraform Validate
+    # 🔹 VALIDATE
     - task: TerraformTask@5
       displayName: "Terraform Validate"
       inputs:
         provider: 'azurerm'
         command: 'validate'
 
-    # 🔹 Terraform Plan
+    # 🔹 PLAN (save plan)
     - task: TerraformTask@5
       displayName: "Terraform Plan"
       inputs:
         provider: 'azurerm'
         command: 'plan'
         environmentServiceNameAzureRM: 'conserveci'
+        commandOptions: '-out=tfplan'
 
-    # 🔹 Terraform Apply
+    # 🔹 APPLY (use saved plan)
     - task: TerraformTask@5
       displayName: "Terraform Apply"
       inputs:
         provider: 'azurerm'
         command: 'apply'
         environmentServiceNameAzureRM: 'conserveci'
-        args: '-auto-approve'
+        commandOptions: 'tfplan -auto-approve'
