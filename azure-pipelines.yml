@@ -1,0 +1,48 @@
+trigger: none
+
+pool:
+  name: cong
+
+stages:
+- stage: TerraformStage
+  displayName: "Terraform Full Workflow"
+  jobs:
+  - job: TerraformJob
+    displayName: "Init Validate Plan Apply"
+    steps:
+
+    # 🔹 Terraform Init
+    - task: TerraformTask@5
+      displayName: "Terraform Init"
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: 'conserveci'
+        backendAzureRmResourceGroupName: 'conpipe'
+        backendAzureRmStorageAccountName: 'const'
+        backendAzureRmContainerName: 'connigent'
+        backendAzureRmKey: 'Contest'
+
+    # 🔹 Terraform Validate
+    - task: TerraformTask@5
+      displayName: "Terraform Validate"
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+
+    # 🔹 Terraform Plan
+    - task: TerraformTask@5
+      displayName: "Terraform Plan"
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        environmentServiceNameAzureRM: 'conserveci'
+
+    # 🔹 Terraform Apply
+    - task: TerraformTask@5
+      displayName: "Terraform Apply"
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        environmentServiceNameAzureRM: 'conserveci'
+        args: '-auto-approve'
